@@ -30,52 +30,6 @@ function getFilm() {
 }
 getFilm();
 
-
-function getCate() {
-    fetch(searchApi, requestOptions)
-    .then((respsonse) => {
-        return respsonse.json();
-    })
-    .then((data) => {
-        let cate = document.getElementById('category');
-        let getCate = data.data;
-        let htmls = getCate.map((getCate) => {
-            return `
-            <li><a href="#">${getCate.name}</a></li>
-            `;
-        })
-        cate.innerHTML = htmls.join('');
-    })
-    .catch((error) => {
-        console.log('Lỗi:', error);
-    })
-}
-getCate();
-
-
-function getRegion() {
-    fetch(searchApi, requestOptions)
-    .then((respsonse) => {
-        return respsonse.json();
-    })
-    .then((data) => {
-        let cate = document.getElementById('category');
-        let getCate = data.data;
-        let htmls = getCate.map((getCate) => {
-            return `
-            <li><a href="#">${getCate.name}</a></li>
-            `;
-        })
-        cate.innerHTML = htmls.join('');
-    })
-    .catch((error) => {
-        console.log('Lỗi:', error);
-    })
-}
-getRegion();
-
-
-
 function renderSlide(films) {
 
     //console.log(films.data.recommendItems);
@@ -191,7 +145,6 @@ function renderKoreaFilm(films) {
     listTrending.innerHTML = htmls.join('');
 }
 
-
 function saveIdCollection(id) {
    localStorage.setItem("idCollection", id);
    //var cc = localStorage.getItem("idCollection");
@@ -204,6 +157,5 @@ function saveIdMovie(id, cate) {
             id: id,
             category: cate,
         }
-    window.localStorage.setItem("idMovie",JSON.stringify(detailMovie));
-    //var cc = localStorage.getItem("idMovie");
+    localStorage.setItem("idMovie",JSON.stringify(detailMovie));
 }

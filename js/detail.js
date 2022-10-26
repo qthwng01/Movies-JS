@@ -23,21 +23,20 @@ function getFilm() {
         return response.json();
     })
     .then((data) => {
-        console.log(data);
+        //console.log(data);
+        startFilm(data);
         renderDetailFilm(data);
         renderLikeList(data);
     })
     .catch((error) => {
         console.log('Lỗi:', error);
-    });  
+    }); 
 }
 getFilm();
 
-
 function renderDetailFilm(film) {
-
+    localStorage.removeItem('searchKey');
     let data = film.data;
-
     function checkName() {
         if(data.aliasName === "") {
             return data.name;
@@ -53,25 +52,11 @@ function renderDetailFilm(film) {
             return rest;
         }
     }
-    //Drama Type
-    let dramaType = film.data.drameTypeVo;
-    //console.log(dramaType);
-
-    //Category
-    let categoryDetail = film.data.category;
-    //console.log(categoryDetail);
-
-    //ID Detail
-    let idDetail = film.data.id;
-    //console.log(idDetail);
-
     //Array EpisodeVO
     let arrEpisodeVO = film.data.episodeVo;
-    //console.log(arrEpisodeVO);
     
     //Array Definition List
     let definitionList = arrEpisodeVO[0].definitionList;
-    //console.log(definitionList[0].code)
 
     function checkActor() {
         if(data.starList.length === 0) {
@@ -92,8 +77,27 @@ function renderDetailFilm(film) {
         if(definitionList[0].code === "GROOT_SD") {
             return '720p';
         }
+        if(definitionList[0].code === "GROOT_FD") {
+            return '540p';
+        }
         else {
-            return 'Đang cập nhật';
+            return '360p (CAM)';
+        }
+    }
+
+    function checkEpisodeCount() {
+        if(data.episodeCount === null) {
+            return '1';
+        } else {
+            return data.episodeCount
+        }
+    }
+
+    function checkEpisodeVO() {
+        if(data.episodeVo.length === 0) {
+            return 'None'
+        } else {
+            return data.episodeVo.length;
         }
     }
 
@@ -130,8 +134,8 @@ function renderDetailFilm(film) {
                     </div>
                     <div class="col-lg-6 col-md-6">
                         <ul>
-                            <li><span>Điểm IMDb:</span> ${data.score} <i class="fa fa-imdb" style="font-size:18px; color:orange"></i></li>
-                            <li><span>Trạng thái:</span>Tập ${data.episodeVo.length} / ${data.episodeCount}</li>
+                            <li><span>Điểm IMDb:</span> ${data.score}</li>
+                            <li><span>Trạng thái:</span>Tập ${checkEpisodeVO()} / ${checkEpisodeCount()}</li>
                             <li><span>Chất lượng:</span> ${checkQuality()}</li>
                             <li><span>Diễn viên:</span> ${checkActor()}</li>
                         </ul>
@@ -149,39 +153,68 @@ function renderDetailFilm(film) {
 }
 
 function renderLikeList(films) {
-    let data = films.data.likeList;
-    
-    //Pass to Array
-    let html = data.map((item) => {
-    return `
-        <div class="col-lg-3 col-md-6 col-sm-6 col-6">
-            <div class="product__item">
-                <div class="product__item__pic">
-                <img class="set-bg" src="${item.coverVerticalUrl}" loading="lazy">
-                <div class="comment"><i class="fa fa-star"></i> ${item.score}</div>
-                <div class="view"><i class="fa fa-calendar"></i> ${item.year}</div>
-                </div>
-                <div class="product__item__text">
-                <ul>
-                    <li>${item.drameTypeVo.drameName}</li>
-                    <li>${item.drameTypeVo.drameType}</li>
-                </ul>
-                <h5><a href="/detail.html" onclick="saveIdMovie('${item.id}', '${item.category}')">${item.name}</a></h5>
-                </div>
-            </div>
-        </div>`; 
-    })
     let likeList = document.getElementById('likelist');
-        likeList.innerHTML = html.join('');
+    let dataLikeList = films.data.likeList;
+    let htmls = dataLikeList.map((item) => {
+        return `
+            <div class="col-lg-3 col-md-6 col-sm-6 col-6">
+                <div class="product__item">
+                    <div class="product__item__pic">
+                    <img class="set-bg" src="${item.coverVerticalUrl}" loading="lazy">
+                    <div class="comment"><i class="fa fa-star"></i> ${item.score}</div>
+                    <div class="view"><i class="fa fa-calendar"></i> ${item.year}</div>
+                    </div>
+                    <div class="product__item__text">
+                    <h5><a href="/detail.html" onclick="saveIdMovie('${item.id}', '${item.category}')">${item.name}</a></h5>
+                    </div>
+                </div>
+            </div>`; 
+    })
+    likeList.innerHTML = htmls.join('');
 }
 
 function saveIdMovie(id, cate) {
-
     const detailMovie = {
             id: id,
             category: cate,
         }
-    window.localStorage.setItem("idMovie",JSON.stringify(detailMovie));
-    //var cc = localStorage.getItem("idMovie");
+    window.localStorage.setItem("idMovie",JSON.stringify(detailMovie)); 
 }
 
+function startFilm(film) { 
+    let listEpisode = film.data.episodeVo;
+    const getFirstId = listEpisode[0].id;
+    localStorage.setItem("idEpisode", getFirstId);
+    function checkQuality() {
+        let quality = listEpisode[0].definitionList;
+        if(quality[0].code === "GROOT_HD") {
+            return "GROOT_HD";
+        }
+        if(quality[0].code === "GROOT_SD") {
+            return "GROOT_SD";
+        }
+        if(quality[0].code === "GROOT_FD") {
+            return "GROOT_FD";
+        }
+        if(quality[0].code === "GROOT_LD") {
+            return "GROOT_LD";
+        }
+    }
+    var idMove = localStorage.getItem("idMovie");
+    var prop = JSON.parse(idMove);
+    let movieMedia = `https://ga-mobile-api.loklok.tv/cms/app/media/previewInfo?category=${prop.category}&contentId=${prop.id}&episodeId=${getFirstId}&definition=${checkQuality()}`;
+    fetch(movieMedia, requestOptions)
+    .then((res) => {
+        return res.json();
+    })
+    .then((data) => {
+        source(data);
+    })
+    .catch((error) => {
+        console.log('Lỗi:', error);
+    })
+    function source(data) {
+        let source = data.data.mediaUrl;
+        localStorage.setItem("url", source);
+    }
+}

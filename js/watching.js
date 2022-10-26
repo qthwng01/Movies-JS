@@ -23,7 +23,7 @@ function getFilm() {
         return response.json();
     })
     .then((data) => {
-        console.log(data);
+        //console.log(data);
         renderDetailFilm(data);
         getUrlSubLang(data);
     })
@@ -35,6 +35,7 @@ getFilm();
 
 function renderDetailFilm(films) {
     let listEpisode = films.data.episodeVo;
+    let breadCumb = document.getElementById('breadcumb');
     let list = document.getElementById('listepisode');
     function checkDefinition() {
         let cd = listEpisode.map((item) => {
@@ -48,16 +49,25 @@ function renderDetailFilm(films) {
                 return "GROOT_FD";
             }
             if(item.definitionList[0].code === "GROOT_LD") {
-                return "Đang cập nhật";
+                return "GROOT_LD";
             }
         })
         return cd.slice(0, 1);
     }
-    
     let htmls = listEpisode.map((episode) => {
-       return `<a id="mmbtn" style="cursor:pointer" onclick="getMovieMedia('${episode.id}', '${checkDefinition()}')">Tập ${episode.seriesNo}</a>`; 
+        function checkEpisodeVO() {
+            if(episode.seriesNo === 0) {
+                return 'Full';
+            } else {
+                return episode.seriesNo;
+            }
+        }
+       return `<a id="mmbtn" style="cursor:pointer" onclick="getMovieMedia('${episode.id}', '${checkDefinition()}')">Tập ${checkEpisodeVO()}</a>`; 
     })
     list.innerHTML = htmls.join('');
+    breadCumb.innerHTML += `
+        <a href="#">${films.data.drameTypeVo.drameName}</a>
+        <span>${films.data.name}</span>`;
 }
 
 function getMovieMedia(id, def) {
@@ -77,12 +87,9 @@ function getMovieMedia(id, def) {
         console.log('Lỗi:', error);
     });  
     function source(data) {
-        let mov = document.getElementById('movie');
-        isSupported = mov.canPlayType('application/x-mpegURL');
-        let source = document.getElementById('source__movie').src = data.data.mediaUrl;
-            mov.load();
+        let source = data.data.mediaUrl;
         window.location.reload();
-        localStorage.setItem("url", source);      
+        localStorage.setItem("url", source);     
     }
 }
 
@@ -130,14 +137,30 @@ function getUrlSubLang(data) {
 
 /* Player Setup */
 document.addEventListener('DOMContentLoaded', () => {  
-    let source = localStorage.getItem("url");
+    let source = localStorage.getItem('url');
     const video = document.querySelector('video');
+    const controls = [
+        'play-large', // The large play button in the center
+        'rewind', // Rewind by the seek time (default 10 seconds)
+        'play', // Play/pause playback
+        'fast-forward', // Fast forward by the seek time (default 10 seconds)
+        'progress', // The progress bar and scrubber for playback and buffering
+        'current-time', // The current time of playback
+        'duration', // The full duration of the media
+        'mute', // Toggle mute
+        'volume', // Volume control
+        'captions', // Toggle captions
+        'settings', // Settings menu
+        'fullscreen' // Toggle fullscreen
+    ];
     const player = new Plyr(video, {
         captions: {  
             active: true, 
             update: true,
             language: 'vi'
-    }});
+        },
+        controls,
+    });
     
     if (!Hls.isSupported()) {          
         video.src = source;
@@ -160,4 +183,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     window.player = player;
+    player.play();
 });

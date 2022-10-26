@@ -4,66 +4,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Caption</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.5.6/plyr.css">
+    <title>Test</title>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
     
-    <video id="movie" controls crossorigin playsinline poster="https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg" >
-        <source id="source__movie" src="https://ali-cdn-play.loklok.tv/69cc400ce77c47898ab24e37c5f021be/d13a42b340734491b478dcb8a3e64173-1944fc41d0c806b36108b8afad01c8a0-sd.m3u8?auth_key=1666296294-6d303433c0b84853bafd02280cf0eff5-0-9fdc04777259fb8fb73596445b23cce1" type='application/x-mpegURL' />
-    </video>    
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.5.6/plyr.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/0.5.14/hls.min.js" integrity="sha512-js37JxjD6gtmJ3N2Qzl9vQm4wcmTilFffk0nTSKzgr3p6aitg73LR205203wTzCCC/NZYO2TAxSa0Lr2VMLQvQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        fetch("https://subtitles.netpop.app/subtitles/20220829/1661765373949_越南-srt")
-        .then(response => response.text())
-        .then(result => {
-            let srtText = result;
-            var srtRegex = /(.*\n)?(\d\d:\d\d:\d\d),(\d\d\d --> \d\d:\d\d:\d\d),(\d\d\d)/g;
-            var vttText = 'WEBVTT\n\n' + srtText.replace(srtRegex, '$1$2.$3.$4');
-            var vttBlob = new Blob([vttText], {
-                type: 'text/vtt'
-            });
-            var blobURL = URL.createObjectURL(vttBlob);
-            track = document.createElement("track");
-            track.kind = "captions";
-            track.label = "Tiếng Việt";
-            track.srclang = "vi";
-            track.src = blobURL;
-            track.setAttribute('default', '');  
-            document.getElementById("movie").appendChild(track);
-        })
-        .catch(error => console.log('error', error));
-        document.addEventListener('DOMContentLoaded', () => {
-        //const source = 'https://ali-cdn-play.loklok.tv/69cc400ce77c47898ab24e37c5f021be/d13a42b340734491b478dcb8a3e64173-1944fc41d0c806b36108b8afad01c8a0-sd.m3u8?auth_key=1666296294-6d303433c0b84853bafd02280cf0eff5-0-9fdc04777259fb8fb73596445b23cce1';
-        let source = document.getElementById('source__movie').src;
-        const video = document.querySelector('video');
-        console.log(source);
-        const player = new Plyr(video, {
-            captions: {
-                active: true, 
-                update: true, 
-                language: 'vi'
-        }});
-        
-        if (!Hls.isSupported()) {
-            
-            video.src = source;
-        } else {
-            const hls = new Hls();
-            hls.loadSource(source);
-            hls.attachMedia(video);
-            window.hls = hls;
-            
-            // Handle changing captions
-            player.on('languagechange', () => {
-                setTimeout(() => hls.subtitleTrack = player.currentTrack, 50);
-            });
-        }
-        window.player = player;
-    });
-   </script>
+   
+   
 </body>
 </html> 

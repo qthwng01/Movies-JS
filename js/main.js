@@ -58,10 +58,6 @@
         allowParentLinks: true
     });
 
-    /*------------------
-        Niceselect
-    --------------------*/
-    $('select').niceSelect();
 
     /*------------------
         Scroll To Top

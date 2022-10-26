@@ -282,7 +282,7 @@ ol {
 	height: 100%;
 	left: 0;
 	top: 0;
-	background: #000;
+	background: #000000b5;
 	z-index: 99999;
 }
 
@@ -320,6 +320,13 @@ ol {
 	-webkit-box-pack: center;
 	-ms-flex-pack: center;
 	justify-content: center;
+}
+
+.input__value {
+	padding: 5px;
+    margin: 5px;
+    border: 1px solid #fff;
+    border-radius: 3px;
 }
 
 /*---------------------
@@ -2017,7 +2024,11 @@ ol {
 	text-align: center;
 }
 
-
+.list__filter {
+	display: block !important;
+    border-radius: 4px;
+    padding: 8px 4px;
+}
 
 /*--------------------------------- Responsive Media Quaries -----------------------------*/
 
@@ -2320,6 +2331,9 @@ ol {
 	}
 	.anime__details__text {
 		margin-top: 4rem;
+	}
+	.breadcrumb__links {
+		display: block !important;
 	}
 }
 
